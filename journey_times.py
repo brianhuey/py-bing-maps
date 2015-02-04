@@ -1,6 +1,6 @@
 import pybingmaps as bing
 from time import localtime
-API_KEY = 'AmpmUg70cWB7IuUTwQvZf8NXvCUFB1FL4CNIwUgpvgR2zecoB2UbkQVAih978_jd'
+API_KEY = ''
 JOURNEYS = {'Journey 1': ['37.423658,-122.090236', '37.423368,-122.075602'],
             'Journey 2': ['37.415563,-122.078091', '37.420471,-122.078048', '37.420769,-122.082919'],
             'Journey 3': ['37.415563,-122.078091', '37.416713,-122.082919', '37.420769,-122.082919'],
