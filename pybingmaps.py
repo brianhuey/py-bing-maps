@@ -28,10 +28,6 @@ API_KEY = os.environ.get('BING_KEY')
 class Bing(object):
     """
     An easy-to-use Python wrapper for the Bing Maps API.
-    >>> Bing('my-api-key').search('the lion king')
-    Or, if your API key is saved as the `RT_KEY` environment variable,
-    the RT class can be initialized like so:
-    >>> RT().search('the lion king')
     """
 
     def __init__(self, api_key='', version=1):
