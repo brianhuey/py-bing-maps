@@ -1,12 +1,14 @@
 import pybingmaps as bing
 from time import localtime
 import json
+from datetime import datetime
+from pytz import timezone
+import pytz
 
 API_KEY = open('api_key.txt', 'r').readline()
 JOURNEYS = json.load(open('journeys.json','r'))
 TRAVEL_TIMES = {}
 bingmap = bing.Bing(API_KEY)
-current_time = str(localtime().tm_mon) + '-' + str(localtime().tm_mday) + '-' + str(localtime().tm_hour) + '-' + str(localtime().tm_min)
 for key in JOURNEYS:
     waypoints = len(JOURNEYS[key])
     waypoints_dic = {}
@@ -21,6 +23,10 @@ for key in JOURNEYS:
             count += 1
     TRAVEL_TIMES[key] = bingmap.route(waypoints_dic)
 
+date_format='%m%d-%H%M'
+date = datetime.now(tz=pytz.utc)
+date = date.astimezone(timezone('US/Pacific'))
+current_time = 'data/' + str(date.strftime(date_format)) + '.txt'
 write_file = open(current_time,'w')
 write_file.write(json.dumps(TRAVEL_TIMES))
 write_file.close()
