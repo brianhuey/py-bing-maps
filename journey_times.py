@@ -21,4 +21,7 @@ for key in JOURNEYS:
             count += 1
     TRAVEL_TIMES[key] = bingmap.route(waypoints_dic)
 
+write_file = open(current_time,'w')
+write_file.write(json.dumps(TRAVEL_TIMES))
+write_file.close()
 
