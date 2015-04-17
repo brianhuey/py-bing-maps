@@ -43,7 +43,7 @@ class Bing(object):
         BASE_URL = 'http://dev.virtualearth.net/REST/v%s/' % version
         self.BASE_URL = BASE_URL
         self.routes_url = BASE_URL + 'Routes'
-        self.traffic_url = BASE_URL + 'Traffic/Incidents'
+        self.traffic_url = BASE_URL + 'Traffic/Incidents/'
 
     def _load_json_from_url(self, url):
         """
@@ -64,10 +64,10 @@ class Bing(object):
     def route(self, journeys, **kwargs):
         """
         Bing Maps Route search. Returns a list of dictionaries.
-        Journey dictionary required: {'Journey Name': ['lat1,lng1', 'lat2,lng2', etc]}
+        Journey dictionary required: {'wayPoint.1': ['lat,lng'], 'wayPoint.2': ['lat,lng']}
         Possible kwargs include: `wayPoint.2+n', 'heading', 'optimize'
-        'avoid', 'distanceBeforeFirstTurn', 'routeAttributes', 'maxSolutions',
-        'tolerances', 'distanceUnit', 'mfa'
+        'avoid', 'distanceBeforeFirstTurn', 'heading', 'optimize', 'routeAttributes', 'routePathOutput', 'maxSolutions', 'tolerances', 'distanceUnit', 'dateTime', 'timeType', 'mfaxSolutions', 'travelMode'
+        See https://msdn.microsoft.com/en-us/library/ff701717.aspx for descriptions.
         """
         search_url = [self.routes_url, '?']
         kwargs.update(journeys)
@@ -75,7 +75,15 @@ class Bing(object):
         search_url.append(urlencode(kwargs))
         data = self._load_json_from_url(''.join(search_url))
         return data
-    def traffic(self, maparea, **kwargs):
+    def traffic(self, mapArea, **kwargs):
         """
         Bing Maps Traffic Incident search. Returns a list of dictionaries.
-        Kwa
+        mapArea string required: 'southLat, westLng, northLat, eastLng'
+        Possible kwargs include: 'congestion', 'description', 'detour', 'start', 'end', 'incidentId', 'lane', 'lastModified', 'roadClosed', 'severity', 'toPoint', 'locationCodes', 'type', 'verified'
+        See https://msdn.microsoft.com/en-us/library/hh441730.aspx for descriptions
+        """
+        search_url = [self.traffic_url, mapArea, '?']
+        kwargs.update({'key': self.api_key})
+        search_url.append(urlencode(kwargs))
+        data = self._load_json_from_url(''.join(search_url))
+        return data

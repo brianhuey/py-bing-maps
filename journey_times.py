@@ -1,4 +1,4 @@
-import pybingmaps as bing
+import pybingmaps.pybingmaps as bing
 from time import localtime
 import json
 from datetime import datetime
