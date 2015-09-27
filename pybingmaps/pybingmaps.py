@@ -14,15 +14,28 @@ try:
 except ImportError:  # pragma: no cover
     # For older versions of Python.
     import simplejson as json
-
 try:
     from urllib2 import urlopen
 except ImportError:  # pragma: no cover
     # For Python 3.
     from urllib.request import urlopen
-
-
 API_KEY = os.environ.get('BING_KEY')
+
+
+def checkLatLng(latlng):
+    """ Checks that latlng is a tuple and has valid values.
+        Input: latlng tuple
+        Output: latlng string
+    """
+    assert isinstance(latlng, tuple)
+    lat = latlng[0]
+    lng = latlng[1]
+    if lat > 90 or lat < -90:
+        raise ValueError
+    elif lng > 180 or lng < -180:
+        raise ValueError
+    else:
+        return str(lat) + ',' + str(lng)
 
 
 class Bing(object):
@@ -61,7 +74,7 @@ class Bing(object):
             pass
         return json.loads(response)
 
-    def route(self, journeys, **kwargs):
+    def route(self, start, end, via=[], **kwargs):
         """
         Bing Maps Route search. Returns a list of dictionaries.
         Journey dictionary required: {'wayPoint.1': 'lat,lng', 'wayPoint.2':
@@ -73,12 +86,38 @@ class Bing(object):
         See https://msdn.microsoft.com/en-us/library/ff701717.aspx for
         descriptions.
         """
+        waypoints = []
+        waypoints.append(checkLatLng(start))
+        if len(via) > 0:
+            waypoints = waypoints + [checkLatLng(latlng) for latlng in via]
+        waypoints.append(checkLatLng(end))
+        numwaypoints = len(waypoints) + 1
+        journeys = {}
+        for n, wp in zip(waypoints, range(1, numwaypoints)):
+            if n == 1 or n == numwaypoints:
+                kwargs['wayPoint.' + str(n)] = wp
+            else:
+                kwargs['viaWayPoint.' + str(n)] = wp
         search_url = [self.routes_url, '?']
         kwargs.update(journeys)
         kwargs.update({'key': self.api_key})
         search_url.append(urlencode(kwargs))
         data = self._load_json_from_url('&'.join(search_url))
         return data
+
+    def travelTime(self, start, end, via=[], **kwargs):
+        """ Returns travel time in seconds
+        """
+        data = self.route(start, end, via, kwargs)
+        return (data['resourceSets'][0]['resources'][0]
+                ['travelDurationTraffic'])
+
+    def travelDistance(self, start, end, via=[], **kwargs):
+        """ Returns travel distance in kilometers
+        """
+        data = self.route(start, end, via, kwargs)
+        return (data['resourceSets'][0]['resources'][0]
+                ['travelDistance'])
 
     def traffic(self, mapArea, **kwargs):
         """
