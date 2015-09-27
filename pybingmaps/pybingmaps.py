@@ -91,31 +91,31 @@ class Bing(object):
         if len(via) > 0:
             waypoints = waypoints + [checkLatLng(latlng) for latlng in via]
         waypoints.append(checkLatLng(end))
-        numwaypoints = len(waypoints) + 1
+        numwaypoints = len(waypoints)
         journeys = {}
-        for n, wp in zip(waypoints, range(1, numwaypoints)):
+        for n, wp in zip(range(1, numwaypoints + 1), waypoints):
             if n == 1 or n == numwaypoints:
-                kwargs['wayPoint.' + str(n)] = wp
+                journeys['wayPoint.' + str(n)] = wp
             else:
-                kwargs['viaWayPoint.' + str(n)] = wp
+                journeys['viaWayPoint.' + str(n)] = wp
         search_url = [self.routes_url, '?']
         kwargs.update(journeys)
         kwargs.update({'key': self.api_key})
         search_url.append(urlencode(kwargs))
-        data = self._load_json_from_url('&'.join(search_url))
+        data = self._load_json_from_url(''.join(search_url))
         return data
 
     def travelTime(self, start, end, via=[], **kwargs):
         """ Returns travel time in seconds
         """
-        data = self.route(start, end, via, kwargs)
+        data = self.route(start, end, via, **kwargs)
         return (data['resourceSets'][0]['resources'][0]
                 ['travelDurationTraffic'])
 
     def travelDistance(self, start, end, via=[], **kwargs):
         """ Returns travel distance in kilometers
         """
-        data = self.route(start, end, via, kwargs)
+        data = self.route(start, end, via, **kwargs)
         return (data['resourceSets'][0]['resources'][0]
                 ['travelDistance'])
 
