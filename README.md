@@ -23,5 +23,5 @@ bing.route(start, end)
 Get travel time and travel distance
 ``` python
 bing.travelTime(start, end)
-big.travelDistance(start, end)
+bing.travelDistance(start, end)
 ```
